@@ -26,8 +26,8 @@ public class ProductLifecycleTest {
     public void testLifecycle() {
 
         // ① NEW (Transient) — not yet associated with EntityManager
-        Product product = new Product("Laptop","Electronics",
-                new BigDecimal("1299.00"),"High-end laptop");
+
+        Product product = new Product("Laptop", null, new BigDecimal("1299.00"), "노트북");
 
         // ② MANAGED (Persistent) — after persist()
         em.persist(product);

@@ -10,14 +10,14 @@
          Maven이 프로젝트를 식별하는 좌표(Coordinates)입니다.
          ===================================================== -->
     <groupId>kr.ac.hansung.cse</groupId>
-    <artifactId>helloSpringMVC-validation</artifactId>
+    <artifactId>helloSpringJpa</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <!-- WAR 패키징: 외부 Tomcat에 배포하기 위해 WAR 형태로 빌드합니다.
          Spring Boot 없이 순수 Spring MVC를 사용하는 핵심 설정입니다. -->
     <packaging>war</packaging>
 
-    <name>helloSpringMVC-validation</name>
+    <name>helloSpringJpa</name>
 
     <properties>
         <!-- Java 21 (LTS) 사용 -->

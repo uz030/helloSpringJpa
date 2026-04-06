@@ -1,9 +1,7 @@
 package kr.ac.hansung.cse.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +10,8 @@ import java.util.List;
 @Table(name = "category")
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString(exclude = "products")          // products 제외: 양방향 무한순환 방지
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 요구 기본 생성자 (외부 직접 생성 방지)
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

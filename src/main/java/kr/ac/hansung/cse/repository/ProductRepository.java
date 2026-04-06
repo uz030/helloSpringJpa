@@ -64,9 +64,9 @@ public class ProductRepository {
      * TypedQuery<Product>: 타입 안전한 쿼리 (ClassCastException 방지)
      */
     public List<Product> findAll() {
-        // JPQL: 엔티티 클래스명과 필드명을 사용합니다 (테이블명/컬럼명 아님)
+        // LEFT JOIN FETCH: LAZY인 category를 한 번의 쿼리로 함께 로드 (LazyInitializationException 방지)
         TypedQuery<Product> query = entityManager
-                .createQuery("SELECT p FROM Product p ORDER BY p.id ASC", Product.class);
+                .createQuery("SELECT p FROM Product p LEFT JOIN FETCH p.category ORDER BY p.id ASC", Product.class);
         return query.getResultList();
     }
 
@@ -82,9 +82,12 @@ public class ProductRepository {
      *              Java 8+ 권장 패턴입니다.
      */
     public Optional<Product> findById(Long id) {
-        Product product = entityManager.find(Product.class, id);
-        // Optional.ofNullable(): null이면 Optional.empty(), 아니면 Optional.of(product)
-        return Optional.ofNullable(product);
+        // LEFT JOIN FETCH: em.find()는 JOIN FETCH 불가 → JPQL로 대체
+        List<Product> result = entityManager
+                .createQuery("SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE p.id = :id", Product.class)
+                .setParameter("id", id)
+                .getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 
     /**

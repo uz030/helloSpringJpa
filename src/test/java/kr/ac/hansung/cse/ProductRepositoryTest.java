@@ -35,7 +35,7 @@ public class ProductRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        testProduct = new Product("Test Laptop","Electronics",
+        testProduct = new Product("Test Laptop",null,
                 new BigDecimal("999.99"),"Test description");
         productRepository.save(testProduct);  // persist in test tx (rolled back after each test)
     }
@@ -56,10 +56,24 @@ public class ProductRepositoryTest {
 
     @Test @DisplayName("Test3: update via merge()")
     public void testUpdate() {
-        em.detach(testProduct);              // 명시적으로 Detached로 전환
-        testProduct.setName("Updated Laptop"); // Detached 변경 (DB 반영 안 됨)
-        Product updated = productRepository.update(testProduct); // merge() 실행
-        assertEquals("Updated Laptop", updated.getName()); // 반환값(Managed)으로 확인
+        Long id = testProduct.getId();
+
+        // ① flush: setUp()의 INSERT를 DB에 반영
+        // ② clear: 1차 캐시 초기화 → testProduct는 Detached 상태
+        em.flush();
+        em.clear();
+
+        // ③ find: DB에서 다시 로드 (Hibernate가 tags 컬렉션 스냅샷을 세션에 등록)
+        //    persist() 직후 detach()하면 컬렉션 스냅샷이 없어 merge() 시 NPE 발생
+        testProduct = em.find(Product.class, id);
+
+        // ④ detach: 다른 트랜잭션에서 받은 Detached 엔티티 상황 시뮬레이션
+        em.detach(testProduct);
+        testProduct.setName("Updated Laptop");  // Detached 변경 (DB 반영 안 됨)
+
+        // ⑤ merge: Detached → Managed로 복귀, UPDATE SQL 실행
+        Product updated = productRepository.update(testProduct);
+        assertEquals("Updated Laptop", updated.getName());
     }
 
     @Test @DisplayName("Test4: delete")

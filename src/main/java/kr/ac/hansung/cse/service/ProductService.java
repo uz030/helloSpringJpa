@@ -1,6 +1,8 @@
 package kr.ac.hansung.cse.service;
 
+import kr.ac.hansung.cse.model.Category;
 import kr.ac.hansung.cse.model.Product;
+import kr.ac.hansung.cse.repository.CategoryRepository;
 import kr.ac.hansung.cse.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,17 +52,23 @@ import java.util.Optional;
 @Transactional(readOnly = true) // 클래스 기본값: 읽기 전용 트랜잭션
 public class ProductService {
 
-    // final 선언: 생성자 주입 후 변경 불가 (불변성 보장)
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+
+    public ProductService(ProductRepository productRepository,
+                          CategoryRepository categoryRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
     /**
-     * 생성자 주입 (Constructor Injection)
-     * Spring 4.3+: 생성자가 하나뿐이면 @Autowired를 생략할 수 있습니다.
-     * DbConfig의 @ComponentScan이 이 클래스를 발견하고
-     * ProductRepository 빈을 찾아 자동으로 주입합니다.
+     * 카테고리 이름(String) → Category 엔티티 변환
+     * 폼에서 받은 카테고리 이름을 DB에서 조회하여 엔티티로 변환합니다.
+     * 비즈니스 로직이므로 Service 계층에 위치합니다.
      */
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public Category resolveCategory(String categoryName) {
+        if (categoryName == null || categoryName.isBlank()) return null;
+        return categoryRepository.findByName(categoryName).orElse(null);
     }
 
     /**

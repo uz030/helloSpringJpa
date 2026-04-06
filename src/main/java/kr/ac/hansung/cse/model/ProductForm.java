@@ -95,8 +95,9 @@ public class ProductForm {
      * id는 DB가 자동 생성하므로 포함하지 않습니다.
      */
     public Product toEntity() {
-        return new Product(this.name, this.category, this.price, this.description);
+        return new Product(this.name, null, this.price, this.description);
     }
+
 
     /**
      * Product 엔티티 → ProductForm 변환 (수정 폼 초기화 시 사용)
@@ -106,7 +107,7 @@ public class ProductForm {
         ProductForm form = new ProductForm();
         form.id = product.getId();
         form.name = product.getName();
-        form.category = product.getCategory();
+        form.category = product.getCategory() != null ? product.getCategory().getName() : null;
         form.price = product.getPrice();
         form.description = product.getDescription();
         return form;
