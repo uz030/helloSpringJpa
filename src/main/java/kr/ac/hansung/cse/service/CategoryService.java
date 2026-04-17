@@ -1,9 +1,12 @@
 package kr.ac.hansung.cse.service;
 
+import kr.ac.hansung.cse.model.Category;
 import kr.ac.hansung.cse.repository.CategoryRepository;
 import kr.ac.hansung.cse.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -14,5 +17,10 @@ public class CategoryService {
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
+
+    // 모든 카테고리 조회
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll(); }
+
 
 }
