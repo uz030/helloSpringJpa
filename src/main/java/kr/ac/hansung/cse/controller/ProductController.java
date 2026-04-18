@@ -106,6 +106,10 @@ public class ProductController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("productForm", new ProductForm());
+
+        // DB에서 카테고리 목록을 가져와서 모델에 담아줘야 html의 th:each가 작동합니다!
+        model.addAttribute("categories", categoryService.getAllCategories());
+
         return "productForm";
     }
 
@@ -138,12 +142,11 @@ public class ProductController {
     @PostMapping("/create")
     public String createProduct(@Valid @ModelAttribute("productForm") ProductForm productForm,
                                 BindingResult bindingResult,
+                                Model model,
                                 RedirectAttributes redirectAttributes) {
 
-        // 검증 오류가 있으면 폼을 다시 표시합니다.
-        // bindingResult는 productForm과 함께 Model에 자동으로 포함되므로
-        // Thymeleaf에서 th:errors로 오류 메시지에 접근할 수 있습니다.
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAllCategories());
             return "productForm"; // 오류가 있는 채로 폼 뷰 재표시
         }
 
